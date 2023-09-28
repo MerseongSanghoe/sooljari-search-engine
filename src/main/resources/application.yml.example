@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://[ip]:[port]/[db]?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: [username]
+    password: [password]
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+  elasticsearch:
+    username: [username]
+    password: [password]
+    uris: [ip]:[port], [ip]:[port], ...
