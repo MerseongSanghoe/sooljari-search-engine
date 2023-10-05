@@ -3,17 +3,14 @@ package com.merseongsanghoe.sooljarisearchengine.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-@Document(indexName = "alcohols", createIndex = true)
+@Document(indexName = "alcohols")
 @Setting(replicas = 0)
 public class AlcoholDocument {
     @Id
@@ -32,5 +29,6 @@ public class AlcoholDocument {
     private List<TagDocument> tags = new ArrayList<>();
 
     @Field(type = FieldType.Object)
+    @WriteOnlyProperty
     private List<AlcSearchKeyDocument> searchKeys = new ArrayList<>();
 }
