@@ -6,6 +6,7 @@ import com.merseongsanghoe.sooljarisearchengine.DTO.AlcoholDTO;
 import com.merseongsanghoe.sooljarisearchengine.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,12 @@ public class AlcoholService {
     /**
      * title 검색어를 활용해 title 필드 타겟으로 elasticsearch에 검색 쿼리
      * @param title title 필드 타겟의 검색어
+     * @param page 페이징 관련 변수가 담긴 Pageable 객체
      * @return responseBody에 바로 적재할 수 있는 형태의 Map 객체
      */
-    public Map<String, Object> searchTitle(String title) {
+    public Map<String, Object> searchTitle(String title, Pageable page) {
         // elasticsearch 검색
-        SearchHits<AlcoholDocument> searchHits = alcoholElasticsearchRepository.findByTitle(title);
+        SearchHits<AlcoholDocument> searchHits = alcoholElasticsearchRepository.findByTitle(title, page).getSearchHits();
 
         // 리턴할 결과 Map 객체
         Map<String, Object> result = new HashMap<>();
@@ -57,7 +59,7 @@ public class AlcoholService {
 
             alcoholDTOList.add(dto);
         }
-        result.put("result", alcoholDTOList);
+        result.put("data", alcoholDTOList);
 
         return result;
     }
