@@ -3,6 +3,7 @@ package com.merseongsanghoe.sooljarisearchengine.DTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,5 +18,6 @@ public class AlcoholDTO {
 
     private String title;
     private String category;
+    private BigDecimal degree;
     private List<String> tags;
 }

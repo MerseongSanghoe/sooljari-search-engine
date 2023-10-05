@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,9 @@ public class AlcoholDocument {
 
     @Field(type = FieldType.Keyword, index = false, docValues = false)
     private String category;
+
+    @Field(type = FieldType.Keyword, index = false, docValues = false)
+    private BigDecimal degree;
 
     @Field(type = FieldType.Object)
     private List<TagDocument> tags = new ArrayList<>();

@@ -55,6 +55,7 @@ public class AlcoholService {
             dto.setId(hit.getContent().getAlcoholId());
             dto.setTitle(hit.getContent().getTitle());
             dto.setCategory(hit.getContent().getCategory());
+            dto.setDegree(hit.getContent().getDegree());
             dto.setTags(tags);
 
             alcoholDTOList.add(dto);
@@ -79,6 +80,7 @@ public class AlcoholService {
             alcoholDocument.setAlcoholId(alcohol.getId());
             alcoholDocument.setTitle(alcohol.getTitle());
             alcoholDocument.setCategory(alcohol.getCategory());
+            alcoholDocument.setDegree(alcohol.getDegree());
             for (Tag tag : alcohol.getTags()) {
                 alcoholDocument.getTags().add(new TagDocument(tag.getTitle()));
             }
