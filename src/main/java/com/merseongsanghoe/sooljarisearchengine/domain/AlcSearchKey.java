@@ -10,9 +10,6 @@ public class AlcSearchKey {
     @Id
     private Long id;
 
+    @Column(name = "search_key")
     private String key;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alcohol_id")
-    private Alcohol alcohol;
 }

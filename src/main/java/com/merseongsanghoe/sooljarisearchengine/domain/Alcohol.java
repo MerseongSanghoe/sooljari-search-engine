@@ -28,6 +28,11 @@ public class Alcohol {
     )
     private List<Tag> tags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "alcohol")
+    @ManyToMany
+    @JoinTable(
+            name = "alc_search_keys_alcohol_links",
+            joinColumns = @JoinColumn(name = "alcohol_id"),
+            inverseJoinColumns = @JoinColumn(name = "alc_search_key_id")
+    )
     private List<AlcSearchKey> searchKeys = new ArrayList<>();
 }
