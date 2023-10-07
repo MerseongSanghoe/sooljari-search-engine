@@ -26,9 +26,9 @@
 /alcohol/search?s=바나나&page=3&size=5
 ```
 * response body
+
+example uri: `/alcohol/search?s=사과&size=2`
 ```JSON
-// example
-// uri: /alcohol/search?s=사과&size=2
 {
   "data": [
     {
@@ -65,3 +65,4 @@
 
 ## 📔 Notes
 > 프로젝트 개발 중 작성한 블로그 글 혹은 문서 링크
+* [[Spring Boot] Spring Boot + elasticsearch로 검색 API 구현하기](https://j-1001000.tistory.com/1)
