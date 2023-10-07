@@ -1,0 +1,23 @@
+spring:
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+  #        show_sql: true
+  #        format_sql: true
+  elasticsearch:
+    username: ${ES_USERNAME}
+    password: ${ES_PASSWORD}
+    uris: ${ES_URIS}
+#logging:
+#  level:
+#    tracer: TRACE
