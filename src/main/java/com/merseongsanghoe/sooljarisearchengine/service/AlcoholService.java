@@ -44,15 +44,17 @@ public class AlcoholService {
         // 결과 컨텐츠
         List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
         for(SearchHit<AlcoholDocument> hit : searchHits) {
-            SearchResultDTO dto = new SearchResultDTO();
+            SearchResultDTO dto = SearchResultDTO.builder()
+                    .score(hit.getScore())
+                    .id(hit.getContent().getAlcoholId())
+                    .title(hit.getContent().getTitle())
+                    .category(hit.getContent().getCategory())
+                    .degree(hit.getContent().getDegree())
+                    .build();
 
-            dto.setScore(hit.getScore());
-            dto.setId(hit.getContent().getAlcoholId());
-            dto.setTitle(hit.getContent().getTitle());
-            dto.setCategory(hit.getContent().getCategory());
-            dto.setDegree(hit.getContent().getDegree());
+            // TODO: 리스트 자료형도 빌더 패턴에 포함할 수 있을까?
             for (TagDocument tag : hit.getContent().getTags()) {
-                dto.getTags().add(tag.getTitle());
+                dto.addTag(tag.getTitle());
             }
 
             searchResultDTOList.add(dto);
