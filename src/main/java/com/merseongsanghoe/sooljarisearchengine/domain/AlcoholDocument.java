@@ -1,7 +1,6 @@
 package com.merseongsanghoe.sooljarisearchengine.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @Document(indexName = "alcohols")
 @Setting(replicas = 0)
 public class AlcoholDocument {
@@ -35,4 +33,20 @@ public class AlcoholDocument {
     @Field(type = FieldType.Object)
     @WriteOnlyProperty
     private List<AlcSearchKeyDocument> searchKeys = new ArrayList<>();
+
+    @Builder
+    private AlcoholDocument(Long alcoholId, String title, String category, BigDecimal degree) {
+        this.alcoholId = alcoholId;
+        this.title = title;
+        this.category = category;
+        this.degree = degree;
+    }
+
+    public void addTag(TagDocument tag) {
+        tags.add(tag);
+    }
+
+    public void addSearchKey(AlcSearchKeyDocument searchKey) {
+        searchKeys.add(searchKey);
+    }
 }

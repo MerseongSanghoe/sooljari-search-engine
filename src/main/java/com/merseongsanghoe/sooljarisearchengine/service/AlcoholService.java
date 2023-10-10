@@ -52,7 +52,7 @@ public class AlcoholService {
                     .degree(hit.getContent().getDegree())
                     .build();
 
-            // TODO: 리스트 자료형도 빌더 패턴에 포함할 수 있을까?
+            // TODO: 리스트 자료형도 빌더 패턴에 포함할 수 있을까? - 1
             for (TagDocument tag : hit.getContent().getTags()) {
                 dto.addTag(tag.getTitle());
             }
@@ -74,17 +74,19 @@ public class AlcoholService {
 
         for (Alcohol alcohol : alcohols) {
             // alcohol 엔티티를 인덱싱할 형태로 변환
-            AlcoholDocument alcoholDocument = new AlcoholDocument();
+            AlcoholDocument alcoholDocument = AlcoholDocument.builder()
+                    .alcoholId(alcohol.getId())
+                    .title(alcohol.getTitle())
+                    .category(alcohol.getCategory())
+                    .degree(alcohol.getDegree())
+                    .build();
 
-            alcoholDocument.setAlcoholId(alcohol.getId());
-            alcoholDocument.setTitle(alcohol.getTitle());
-            alcoholDocument.setCategory(alcohol.getCategory());
-            alcoholDocument.setDegree(alcohol.getDegree());
+            // TODO: 리스트 자료형도 빌더 패턴에 포함할 수 있을까? - 2
             for (Tag tag : alcohol.getTags()) {
-                alcoholDocument.getTags().add(new TagDocument(tag.getTitle()));
+                alcoholDocument.addTag(new TagDocument(tag.getTitle()));
             }
             for (AlcSearchKey searchKey : alcohol.getSearchKeys()) {
-                alcoholDocument.getSearchKeys().add(new AlcSearchKeyDocument(searchKey.getKey()));
+                alcoholDocument.addSearchKey(new AlcSearchKeyDocument(searchKey.getKey()));
             }
 
             alcoholElasticsearchRepository.save(alcoholDocument);
