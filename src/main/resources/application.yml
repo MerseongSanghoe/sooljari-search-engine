@@ -12,12 +12,7 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 100
-  #        show_sql: true
-  #        format_sql: true
   elasticsearch:
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
     uris: ${ES_URIS}
-#logging:
-#  level:
-#    tracer: TRACE
