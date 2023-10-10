@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class AlcoholDTO {
+public class SearchResultDTO {
     private float score;
 
     private Long id;
@@ -19,5 +20,5 @@ public class AlcoholDTO {
     private String title;
     private String category;
     private BigDecimal degree;
-    private List<String> tags;
+    private List<String> tags = new ArrayList<>();
 }

@@ -2,7 +2,7 @@ package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholRepository;
-import com.merseongsanghoe.sooljarisearchengine.DTO.AlcoholDTO;
+import com.merseongsanghoe.sooljarisearchengine.DTO.SearchResultDTO;
 import com.merseongsanghoe.sooljarisearchengine.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,25 +42,22 @@ public class AlcoholService {
         result.put("count", searchHits.getTotalHits());
 
         // 결과 컨텐츠
-        List<AlcoholDTO> alcoholDTOList = new ArrayList<>();
+        List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
         for(SearchHit<AlcoholDocument> hit : searchHits) {
-            AlcoholDTO dto = new AlcoholDTO();
-
-            List<String> tags = new ArrayList<>();
-            for (TagDocument tag : hit.getContent().getTags()) {
-                tags.add(tag.getTitle());
-            }
+            SearchResultDTO dto = new SearchResultDTO();
 
             dto.setScore(hit.getScore());
             dto.setId(hit.getContent().getAlcoholId());
             dto.setTitle(hit.getContent().getTitle());
             dto.setCategory(hit.getContent().getCategory());
             dto.setDegree(hit.getContent().getDegree());
-            dto.setTags(tags);
+            for (TagDocument tag : hit.getContent().getTags()) {
+                dto.getTags().add(tag.getTitle());
+            }
 
-            alcoholDTOList.add(dto);
+            searchResultDTOList.add(dto);
         }
-        result.put("data", alcoholDTOList);
+        result.put("data", searchResultDTOList);
 
         return result;
     }
