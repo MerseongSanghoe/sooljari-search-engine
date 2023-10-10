@@ -2,21 +2,23 @@ package com.merseongsanghoe.sooljarisearchengine.controller;
 
 import com.merseongsanghoe.sooljarisearchengine.service.AlcoholService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/alcohol")
-public class AlcoholController {
+@RequestMapping("/search")
+public class SearchController {
+
     private final AlcoholService alcoholService;
 
-    @GetMapping("/search")
+    @GetMapping("")
     public ResponseEntity<Map<String, Object>> search(@RequestParam("s") String s,
                                                       Pageable page) {
         Map<String, Object> results = alcoholService.searchTitle(s, page);
@@ -24,10 +26,4 @@ public class AlcoholController {
         return ResponseEntity.ok().body(results);
     }
 
-    @PostMapping("/index-all")
-    public ResponseEntity<Void> indexAll() {
-        alcoholService.indexAll();
-
-        return ResponseEntity.ok().build();
-    }
 }
