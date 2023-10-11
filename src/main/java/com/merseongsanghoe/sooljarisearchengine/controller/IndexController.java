@@ -1,6 +1,6 @@
 package com.merseongsanghoe.sooljarisearchengine.controller;
 
-import com.merseongsanghoe.sooljarisearchengine.service.AlcoholService;
+import com.merseongsanghoe.sooljarisearchengine.service.IndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/index")
 public class IndexController {
 
-    private final AlcoholService alcoholService;
+    private final IndexService indexService;
 
     @PostMapping("/all")
     public ResponseEntity<Void> indexAll() {
-        alcoholService.indexAll();
+        indexService.indexAll();
 
         return ResponseEntity.ok().build();
     }

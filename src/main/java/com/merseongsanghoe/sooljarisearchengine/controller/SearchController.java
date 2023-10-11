@@ -1,6 +1,6 @@
 package com.merseongsanghoe.sooljarisearchengine.controller;
 
-import com.merseongsanghoe.sooljarisearchengine.service.AlcoholService;
+import com.merseongsanghoe.sooljarisearchengine.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +16,12 @@ import java.util.Map;
 @RequestMapping("/search")
 public class SearchController {
 
-    private final AlcoholService alcoholService;
+    private final SearchService searchService;
 
     @GetMapping("")
     public ResponseEntity<Map<String, Object>> search(@RequestParam("s") String s,
                                                       Pageable page) {
-        Map<String, Object> results = alcoholService.searchTitle(s, page);
+        Map<String, Object> results = searchService.searchTitle(s, page);
 
         return ResponseEntity.ok().body(results);
     }
