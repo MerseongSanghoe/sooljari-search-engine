@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,9 +22,9 @@ public class IndexService {
      */
     @Transactional(readOnly = true)
     public void indexAll() {
-        // TODO: 데이터가 많을 때 전체 인덱싱 성능 확인 필요
         List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
 
+        List<AlcoholDocument> documentList = new ArrayList<>();
         for (Alcohol alcohol : alcohols) {
             // alcohol 엔티티를 엘라스틱서치 도큐먼트인 alcoholDocument 객체로 변환
             AlcoholDocument alcoholDocument = AlcoholDocument.builder()
@@ -40,7 +41,10 @@ public class IndexService {
                 alcoholDocument.addSearchKey(new AlcSearchKeyDocument(searchKey.getKey()));
             }
 
-            alcoholElasticsearchRepository.save(alcoholDocument);
+            documentList.add(alcoholDocument);
         }
+
+        // 리스트에 담아서 한 번에 save
+        alcoholElasticsearchRepository.saveAll(documentList);
     }
 }
