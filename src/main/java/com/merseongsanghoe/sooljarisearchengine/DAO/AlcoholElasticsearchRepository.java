@@ -1,6 +1,6 @@
 package com.merseongsanghoe.sooljarisearchengine.DAO;
 
-import com.merseongsanghoe.sooljarisearchengine.domain.AlcoholDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;

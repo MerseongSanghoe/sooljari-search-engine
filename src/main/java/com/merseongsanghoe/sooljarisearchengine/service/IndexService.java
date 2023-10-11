@@ -2,7 +2,12 @@ package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholRepository;
-import com.merseongsanghoe.sooljarisearchengine.domain.*;
+import com.merseongsanghoe.sooljarisearchengine.document.AlcSearchKeyDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.TagDocument;
+import com.merseongsanghoe.sooljarisearchengine.entity.AlcSearchKey;
+import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
+import com.merseongsanghoe.sooljarisearchengine.entity.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,6 @@
 package com.merseongsanghoe.sooljarisearchengine.DAO;
 
-import com.merseongsanghoe.sooljarisearchengine.domain.Alcohol;
+import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

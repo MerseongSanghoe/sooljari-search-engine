@@ -2,8 +2,8 @@ package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.DTO.SearchResultDTO;
-import com.merseongsanghoe.sooljarisearchengine.domain.AlcoholDocument;
-import com.merseongsanghoe.sooljarisearchengine.domain.TagDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.TagDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;

@@ -1,4 +1,4 @@
-package com.merseongsanghoe.sooljarisearchengine.domain;
+package com.merseongsanghoe.sooljarisearchengine.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.merseongsanghoe.sooljarisearchengine.domain;
+package com.merseongsanghoe.sooljarisearchengine.document;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
