@@ -3,7 +3,6 @@ package com.merseongsanghoe.sooljarisearchengine.service;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.DTO.SearchResultDTO;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
-import com.merseongsanghoe.sooljarisearchengine.document.TagDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -40,17 +39,7 @@ public class SearchService {
         // 결과 컨텐츠
         List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
         for(SearchHit<AlcoholDocument> hit : searchHits) {
-            SearchResultDTO dto = SearchResultDTO.builder()
-                    .score(hit.getScore())
-                    .id(hit.getContent().getAlcoholId())
-                    .title(hit.getContent().getTitle())
-                    .category(hit.getContent().getCategory())
-                    .degree(hit.getContent().getDegree())
-                    .build();
-
-            for (TagDocument tag : hit.getContent().getTags()) {
-                dto.addTag(tag.getTitle());
-            }
+            SearchResultDTO dto = SearchResultDTO.of(hit.getScore(), hit.getContent());
 
             searchResultDTOList.add(dto);
         }
