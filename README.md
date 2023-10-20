@@ -10,58 +10,9 @@
 * elasticsearch 8.7.1
 * MySQL
 
-## 🔗 APIs
-### 검색 API
-* request URI: `/alcohol/search`
-* request param
-  * `s`: 검색어
-  * `page`(default 0): 페이지 (zero-based)
-  * `size`(default 10): 한 페이지의 개수
-* request uri example
-```
-// 사과 검색
-/alcohol/search?s=사과
-
-// 바나나 검색 (5개씩 나눈 페이지의 3번째)
-/alcohol/search?s=바나나&page=3&size=5
-```
-* response body
-
-example uri: `/alcohol/search?s=사과&size=2`
-```JSON
-{
-  "data": [
-    {
-      "score": 0.52354836,
-      "id": 2,
-      "title": "사과",
-      "category": "사과",
-      "degree": 10.0,
-      "tags": [
-        "태그1",
-        "태그2"
-      ]
-    },
-    {
-      "score": 0.39019167,
-      "id": 1,
-      "title": "사과즙",
-      "category": "사과",
-      "degree": 10.0,
-      "tags": [
-        "태그1",
-        "태그2",
-        "태그3"
-      ]
-    }
-  ],
-  "count": 100
-}
-```
-* `count`: 검색 결과의 총 개수
-* `data`: 검색 컨텐츠
-  * `score`: 검색 스코어
-  * `id`: DB id
+## ☎️ API Documents (latest - v0.0.2)
+### Search API [🔗 link](docs/searchAPI/v0.0.2.md)
+### Index API [🔗 link](docs/indexAPI/v0.0.2.md)
 
 ## 📔 Notes
 > 프로젝트 개발 중 작성한 블로그 글 혹은 문서 링크
