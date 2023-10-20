@@ -4,6 +4,7 @@ import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchReposito
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholRepository;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
 import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
+import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholDocumentNotFoundException;
 import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNotFoundException;
 import com.merseongsanghoe.sooljarisearchengine.util.IndexUtil;
 import lombok.RequiredArgsConstructor;
@@ -249,5 +250,22 @@ public class IndexService {
         // repository save() 호출 시,
         // id 값 기준으로 인덱스에 없다면 save, 인덱스에 있다면 update
         alcoholElasticsearchRepository.save(alcoholDocument);
+    }
+
+    /**
+     * Document id를 파라미터로 받아 인덱스에서 삭제
+     * @param id 도큐먼트 id (== 데이터베이스 id)
+     */
+    public void removeSingleDocument(Long id) {
+        Optional<AlcoholDocument> _target = alcoholElasticsearchRepository.findById(id);
+
+        // 삭제할 타겟 도큐먼트가 존재하지 않는다면, 404 예외 발생
+        if (_target.isEmpty()) {
+            throw new AlcoholDocumentNotFoundException(id);
+        }
+
+        // index에서 document 삭제
+        AlcoholDocument target = _target.get();
+        alcoholElasticsearchRepository.delete(target);
     }
 }

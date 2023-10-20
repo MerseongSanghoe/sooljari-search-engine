@@ -37,4 +37,15 @@ public class IndexController {
 
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * 특정 데이터 인덱스에서 삭제
+     * @param id 삭제할 데이터의 DB id
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> remove(@PathVariable("id") Long id) {
+        indexService.removeSingleDocument(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
