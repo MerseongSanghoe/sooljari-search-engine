@@ -3,6 +3,7 @@ package com.merseongsanghoe.sooljarisearchengine.controller;
 import com.merseongsanghoe.sooljarisearchengine.service.IndexService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class IndexController {
         boolean db = (rq.getParameter("db") != null);
         indexService.indexAll(db);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -35,7 +36,7 @@ public class IndexController {
     public ResponseEntity<Void> index(@PathVariable("id") Long id) {
         indexService.indexSingleDocument(id);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
