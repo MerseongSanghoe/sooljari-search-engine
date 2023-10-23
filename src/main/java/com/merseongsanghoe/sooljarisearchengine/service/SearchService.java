@@ -5,8 +5,11 @@ import com.merseongsanghoe.sooljarisearchengine.DTO.SearchResultDTO;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.Map;
 public class SearchService {
 
     private final AlcoholElasticsearchRepository alcoholElasticsearchRepository;
+    private final ElasticsearchOperations elasticsearchOperations;
 
     /**
      * title 검색어를 활용해 title 필드 타겟으로 elasticsearch에 검색 쿼리
@@ -28,7 +32,15 @@ public class SearchService {
      */
     public Map<String, Object> searchTitle(String title, Pageable page) {
         // elasticsearch 검색
-        SearchHits<AlcoholDocument> searchHits = alcoholElasticsearchRepository.findByTitle(title, page).getSearchHits();
+//        SearchHits<AlcoholDocument> searchHits = alcoholElasticsearchRepository.findByTitle(title, page).getSearchHits();
+        Query searchQuery = NativeQuery.builder()
+                .withQuery(q -> q
+                        .match(m -> m
+                                .field("title")
+                                .query(title)))
+                .withPageable(page)
+                .build();
+        SearchHits<AlcoholDocument> searchHits = elasticsearchOperations.search(searchQuery, AlcoholDocument.class);
 
         // 리턴할 결과 Map 객체
         Map<String, Object> result = new HashMap<>();
