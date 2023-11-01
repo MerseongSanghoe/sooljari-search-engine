@@ -45,8 +45,10 @@ public class SearchService {
         // 리턴할 결과 Map 객체
         Map<String, Object> result = new HashMap<>();
 
-        // 결과 개수
+        // 검색 결과 메타데이터
         result.put("count", searchHits.getTotalHits());
+        result.put("page", page.getPageNumber());
+        result.put("size", page.getPageSize());
 
         // 결과 컨텐츠
         List<SearchResultDTO> searchResultDTOList = new ArrayList<>();
