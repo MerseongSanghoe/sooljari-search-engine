@@ -10,8 +10,8 @@
 * elasticsearch 8.6.2
 * MySQL
 
-## ☎️ API Documents (latest - v0.0.2)
-### Search API [🔗 link](docs/searchAPI/v0.0.2.md)
+## ☎️ API Documents (latest - v0.0.3)
+### Search API [🔗 link](docs/searchAPI/v0.0.3.md)
 ### Index API [🔗 link](docs/indexAPI/v0.0.2.md)
 
 ## 📔 Notes
