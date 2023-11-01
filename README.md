@@ -7,7 +7,7 @@
   * Spring Boot 3.1.3
   * Spring-data-JPA 3.1.3
   * Spring-data-elasticsearch 5.1.3
-* elasticsearch 8.7.1
+* elasticsearch 8.6.2
 * MySQL
 
 ## ☎️ API Documents (latest - v0.0.2)
