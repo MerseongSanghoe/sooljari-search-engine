@@ -31,4 +31,25 @@ public class AutoCompletionController {
 
         return ResponseEntity.ok(results);
     }
+
+    /**
+     * String 타입의 keyword를 입력받아, 자동완성 키워드에 추가
+     * @param req Request Body
+     */
+    @PostMapping("")
+    public ResponseEntity<Void> putAutoCompletion(@RequestBody Map<String, String> req) {
+        String keyword = req.get("keyword");
+
+        // "keyword" req body 값이 없다면 BAD REQUEST
+        if (keyword == null || keyword.isBlank()) {
+            throw new RequiredRequestBodyIsMissingException("keyword");
+        }
+
+        // DEBUG LOG: 추가할 검색어 자동완성 키워드
+        log.debug("PUT AutoCompletion Keyword: {}", keyword);
+
+        indexService.putCompletionKeyword(keyword);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }
