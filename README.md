@@ -10,9 +10,10 @@
 * elasticsearch 8.6.2
 * MySQL
 
-## ☎️ API Documents (latest - v0.0.3)
+## ☎️ API Documents (latest - v0.0.4)
 ### Search API [🔗 link](docs/searchAPI/v0.0.3.md)
 ### Index API [🔗 link](docs/indexAPI/v0.0.2.md)
+### Auto Completion API [🔗 link](docs/autocompletionAPI/v0.0.4.md)
 
 ## 📔 Notes
 > 프로젝트 개발 중 작성한 블로그 글 혹은 문서 링크
