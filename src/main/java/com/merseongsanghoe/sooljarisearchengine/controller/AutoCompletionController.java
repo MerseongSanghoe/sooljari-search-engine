@@ -52,4 +52,11 @@ public class AutoCompletionController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping("/alcohol-title")
+    public ResponseEntity<Void> putAlcoholTitleAutoCompletion() {
+        indexService.putAllTitlesToAutoCompletion();
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

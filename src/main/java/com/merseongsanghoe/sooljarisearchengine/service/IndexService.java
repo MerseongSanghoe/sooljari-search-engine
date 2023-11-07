@@ -302,4 +302,23 @@ public class IndexService {
         AutoCompletionDocument completion = AutoCompletionDocument.from(keyword);
         autoCompletionElasticsearchRepository.save(completion);
     }
+
+    /**
+     * 검색어 자동완성 인덱스에 술 데이터의 주류명 전부 추가
+     */
+    @Transactional(readOnly = true)
+    public void putAllTitlesToAutoCompletion() {
+        // 인덱스 존재 여부 확인 및 생성
+        createIndexIfNotExists(AUTO_COMPLETION_INDEX_NAME, AutoCompletionDocument.class);
+
+        List<Alcohol> alcoholList = alcoholRepository.findAll();
+
+        List<AutoCompletionDocument> autoCompletionList = new ArrayList<>();
+        for (Alcohol alcohol : alcoholList) {
+            AutoCompletionDocument completion = AutoCompletionDocument.from(alcohol.getTitle());
+            autoCompletionList.add(completion);
+        }
+
+        autoCompletionElasticsearchRepository.saveAll(autoCompletionList);
+    }
 }
