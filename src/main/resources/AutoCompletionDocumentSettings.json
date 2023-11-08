@@ -1,0 +1,26 @@
+{
+  "index": {
+    "analysis": {
+      "filter": {
+        "completion_filter": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 50
+        }
+      },
+      "analyzer": {
+        "completion_search_analyzer": {
+          "type": "custom",
+          "tokenizer": "jaso_tokenizer"
+        },
+        "completion_index_analyzer": {
+          "type": "custom",
+          "tokenizer": "jaso_tokenizer",
+          "filter": [
+            "completion_filter"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,8 +1,10 @@
 package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
+import com.merseongsanghoe.sooljarisearchengine.DAO.AutoCompletionElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.DTO.SearchResultDTO;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.AutoCompletionDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -16,12 +18,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SearchService {
 
     private final AlcoholElasticsearchRepository alcoholElasticsearchRepository;
+    private final AutoCompletionElasticsearchRepository autoCompletionElasticsearchRepository;
+
     private final ElasticsearchOperations elasticsearchOperations;
 
     /**
@@ -60,5 +65,23 @@ public class SearchService {
         result.put("data", searchResultDTOList);
 
         return result;
+    }
+
+    /**
+     * keyword를 받아서 검색어 자동완성 결과 반환
+     * @param keyword
+     * @param page
+     * @return
+     */
+    public Map<String, Object> getAutoCompletion(String keyword, Pageable page) {
+        List<AutoCompletionDocument> result = autoCompletionElasticsearchRepository.findByKeyword(keyword, page);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("data",
+                result.stream()
+                        .map(AutoCompletionDocument::getKeyword)
+                        .collect(Collectors.toList()));
+
+        return response;
     }
 }

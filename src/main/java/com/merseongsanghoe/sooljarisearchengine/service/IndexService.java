@@ -2,20 +2,26 @@ package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholRepository;
+import com.merseongsanghoe.sooljarisearchengine.DAO.AutoCompletionElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
+import com.merseongsanghoe.sooljarisearchengine.document.AutoCompletionDocument;
 import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
 import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholDocumentNotFoundException;
 import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNotFoundException;
+import com.merseongsanghoe.sooljarisearchengine.exception.CompletionKeywordDuplicatedException;
 import com.merseongsanghoe.sooljarisearchengine.util.IndexUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.index.AliasAction;
 import org.springframework.data.elasticsearch.core.index.AliasActionParameters;
 import org.springframework.data.elasticsearch.core.index.AliasActions;
 import org.springframework.data.elasticsearch.core.index.Settings;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.reindex.ReindexRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,10 +38,12 @@ public class IndexService {
 
     private final AlcoholRepository alcoholRepository;
     private final AlcoholElasticsearchRepository alcoholElasticsearchRepository;
+    private final AutoCompletionElasticsearchRepository autoCompletionElasticsearchRepository;
 
     private final ElasticsearchOperations elasticsearchOperations;
 
     private final String ALCOHOL_INDEX_NAME = "alcohols";
+    private final String AUTO_COMPLETION_INDEX_NAME = "auto-completion";
 
     /**
      * 인덱스 존재 유무 확인 (Alias 여부 미구분)
@@ -267,5 +275,50 @@ public class IndexService {
         // index에서 document 삭제
         AlcoholDocument target = _target.get();
         alcoholElasticsearchRepository.delete(target);
+    }
+
+    /**
+     * 검색어 자동완성 인덱스에 키워드 추가
+     * @param keyword 인덱스에 추가할 키워드 문자열
+     */
+    public void putCompletionKeyword(String keyword) {
+        // 인덱스 존재 여부 확인 및 생성
+        createIndexIfNotExists(AUTO_COMPLETION_INDEX_NAME, AutoCompletionDocument.class);
+
+        // 자동완성 키워드 중복 확인
+        Query searchQuery = NativeQuery.builder()
+                .withQuery(q -> q
+                        .match(m -> m
+                                .field("keyword.keyword")
+                                .query(keyword)))
+                .build();
+        SearchHits<AutoCompletionDocument> _exists = elasticsearchOperations.search(searchQuery, AutoCompletionDocument.class);
+
+        // 중복되는 키워드가 존재한다면 duplication 예외 발생
+        if (_exists.getTotalHits() > 0) {
+            throw new CompletionKeywordDuplicatedException(keyword);
+        }
+
+        AutoCompletionDocument completion = AutoCompletionDocument.from(keyword);
+        autoCompletionElasticsearchRepository.save(completion);
+    }
+
+    /**
+     * 검색어 자동완성 인덱스에 술 데이터의 주류명 전부 추가
+     */
+    @Transactional(readOnly = true)
+    public void putAllTitlesToAutoCompletion() {
+        // 인덱스 존재 여부 확인 및 생성
+        createIndexIfNotExists(AUTO_COMPLETION_INDEX_NAME, AutoCompletionDocument.class);
+
+        List<Alcohol> alcoholList = alcoholRepository.findAll();
+
+        List<AutoCompletionDocument> autoCompletionList = new ArrayList<>();
+        for (Alcohol alcohol : alcoholList) {
+            AutoCompletionDocument completion = AutoCompletionDocument.from(alcohol.getTitle());
+            autoCompletionList.add(completion);
+        }
+
+        autoCompletionElasticsearchRepository.saveAll(autoCompletionList);
     }
 }
