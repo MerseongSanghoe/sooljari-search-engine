@@ -22,14 +22,6 @@ public class Alcohol {
 
     @ManyToMany
     @JoinTable(
-            name = "alcohols_tags_links",
-            joinColumns = @JoinColumn(name = "alcohol_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private List<Tag> tags = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
             name = "alc_search_keys_alcohol_links",
             joinColumns = @JoinColumn(name = "alcohol_id"),
             inverseJoinColumns = @JoinColumn(name = "alc_search_key_id")

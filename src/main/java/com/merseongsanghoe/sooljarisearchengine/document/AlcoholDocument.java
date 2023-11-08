@@ -54,9 +54,7 @@ public class AlcoholDocument {
                 alcohol.getTitle(),
                 alcohol.getCategory(),
                 alcohol.getDegree(),
-                alcohol.getTags().stream()
-                    .map(tag -> new TagDocument(tag.getTitle()))
-                    .collect(Collectors.toList()),
+                new ArrayList<>(), // TODO: 태그 관련 개발 진행 후 변경 예정
                 alcohol.getSearchKeys().stream()
                     .map(alcSearchKey -> new AlcSearchKeyDocument(alcSearchKey.getKey()))
                     .collect(Collectors.toList())
