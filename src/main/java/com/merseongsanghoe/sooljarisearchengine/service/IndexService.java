@@ -45,6 +45,14 @@ public class IndexService {
     private final String ALCOHOL_INDEX_NAME = "alcohols";
     private final String AUTO_COMPLETION_INDEX_NAME = "auto-completion";
 
+    @Transactional(readOnly = true)
+    private List<Alcohol> getAllAlcohols() {
+        List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
+        alcohols = alcoholRepository.findAllWithImages();
+
+        return alcohols;
+    }
+
     /**
      * 인덱스 존재 유무 확인 (Alias 여부 미구분)
      * @param indexName 인덱스 (or alias) 이름
@@ -154,7 +162,8 @@ public class IndexService {
      * 데이터베이스 속 alcohol 데이터 전부 elasticsearch에 인덱싱
      */
     private void insertDocumentsIntoIndexFromDatabase(String indexName) {
-        List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
+//        List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
+        List<Alcohol> alcohols = this.getAllAlcohols();
 
         List<AlcoholDocument> documentList = new ArrayList<>();
         for (Alcohol alcohol : alcohols) {
@@ -217,7 +226,6 @@ public class IndexService {
      * Alcohol 데이터 전체 인덱싱
      * @param doReadDatabase if true, extracts data from database
      */
-    @Transactional(readOnly = true)
     public void indexAll(Boolean doReadDatabase) {
         if (existsIndex(ALCOHOL_INDEX_NAME)){
             // 이미 기존 인덱스가 존재한다면, 재인덱싱
@@ -239,7 +247,7 @@ public class IndexService {
      * @param id 데이터베이스 id
      */
     @Transactional(readOnly = true)
-    public void indexSingleDocument(Long id) {
+    public void indexSingleAlcoholDocument(Long id) {
         // 인덱스 존재 여부 확인 및 생성
         createIndexIfNotExists(ALCOHOL_INDEX_NAME, AlcoholDocument.class);
 

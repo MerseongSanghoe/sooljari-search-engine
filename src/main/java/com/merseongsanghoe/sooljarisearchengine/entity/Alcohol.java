@@ -27,4 +27,8 @@ public class Alcohol {
             inverseJoinColumns = @JoinColumn(name = "alc_search_key_id")
     )
     private List<AlcSearchKey> searchKeys = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alcohol")
+    @OrderBy("image_order")
+    private List<AlcoholImageLink> images = new ArrayList<>();
 }

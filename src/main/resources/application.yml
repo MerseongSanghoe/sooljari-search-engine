@@ -8,10 +8,6 @@ spring:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-  jpa:
-    properties:
-      hibernate:
-        default_batch_fetch_size: 100
   elasticsearch:
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
