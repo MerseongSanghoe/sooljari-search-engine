@@ -12,3 +12,8 @@ spring:
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
     uris: ${ES_URIS}
+  neo4j:
+    uri: ${NEO_URI}
+    authentication:
+      username: ${NEO_USERNAME}
+      password: ${NEO_PASSWORD}

@@ -1,14 +1,17 @@
 package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
+import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholNodeRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AutoCompletionElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
 import com.merseongsanghoe.sooljarisearchengine.document.AutoCompletionDocument;
 import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
 import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholDocumentNotFoundException;
+import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNodeNotFoundException;
 import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNotFoundException;
 import com.merseongsanghoe.sooljarisearchengine.exception.CompletionKeywordDuplicatedException;
+import com.merseongsanghoe.sooljarisearchengine.node.AlcoholNode;
 import com.merseongsanghoe.sooljarisearchengine.util.IndexUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +40,11 @@ import java.util.Set;
 public class IndexService {
 
     private final AlcoholRepository alcoholRepository;
+
     private final AlcoholElasticsearchRepository alcoholElasticsearchRepository;
     private final AutoCompletionElasticsearchRepository autoCompletionElasticsearchRepository;
+
+    private final AlcoholNodeRepository alcoholNodeRepository;
 
     private final ElasticsearchOperations elasticsearchOperations;
 
@@ -251,17 +257,24 @@ public class IndexService {
         // 인덱스 존재 여부 확인 및 생성
         createIndexIfNotExists(ALCOHOL_INDEX_NAME, AlcoholDocument.class);
 
+        // 관계형 데이터베이스에서 주류 정보 추출
         Optional<Alcohol> _target = alcoholRepository.findByIdWithSearchKeys(id);
-
-        // 인덱스 타겟 데이터가 데이터베이스에 존재하지 않아 예외 발생
         if (_target.isEmpty()) {
             throw new AlcoholNotFoundException(id);
         }
 
         Alcohol alcohol = _target.get();
 
+        // 그래프 데이터베이스에서 주류 태그 정보 추출
+        Optional<AlcoholNode> _node = alcoholNodeRepository.findByIdOrderByTagWeightDesc(id);
+        if (_node.isEmpty()) {
+            throw new AlcoholNodeNotFoundException(id);
+        }
+
+        AlcoholNode alcoholNode = _node.get();
+
         // Alcohol 엔티티 객체로 AlcoholDocument 도큐먼트 객체 생성
-        AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol);
+        AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol, alcoholNode);
 
         // repository save() 호출 시,
         // id 값 기준으로 인덱스에 없다면 save, 인덱스에 있다면 update

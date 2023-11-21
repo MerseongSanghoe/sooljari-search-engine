@@ -1,6 +1,7 @@
 package com.merseongsanghoe.sooljarisearchengine.document;
 
 import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
+import com.merseongsanghoe.sooljarisearchengine.node.AlcoholNode;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
@@ -66,6 +67,32 @@ public class AlcoholDocument {
                 alcohol.getSearchKeys().stream()
                     .map(alcSearchKey -> new AlcSearchKeyDocument(alcSearchKey.getKey()))
                     .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Alcohol 엔티티 객체와 Alcohol 노드 엔티티 객체를 매개변수로 받아
+     * 클래스 객체를 생성하는 스태틱 팩토리 메소드
+     * @param alcohol Alcohol 엔티티 객체
+     * @param alcoholNode Alcohol 노드 엔티티 객체
+     * @return 생성한 Alcohol 도큐먼트 객체
+     */
+    public static AlcoholDocument of(Alcohol alcohol, AlcoholNode alcoholNode) {
+        // image list에 데이터가 있다면 첫 번째 값, 없다면 null
+        String imageURL = alcohol.getImages().isEmpty() ? null : alcohol.getImages().get(0).getImage().getUrl();
+
+        return new AlcoholDocument(
+                alcohol.getId(),
+                alcohol.getTitle(),
+                alcohol.getCategory(),
+                alcohol.getDegree(),
+                imageURL,
+                alcoholNode.getTags().stream()
+                                    .map(TagDocument::of)
+                                    .collect(Collectors.toList()),
+                alcohol.getSearchKeys().stream()
+                                    .map(alcSearchKey -> new AlcSearchKeyDocument(alcSearchKey.getKey()))
+                                    .collect(Collectors.toList())
         );
     }
 }
