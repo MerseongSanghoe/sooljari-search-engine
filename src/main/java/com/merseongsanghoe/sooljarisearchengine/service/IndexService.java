@@ -51,6 +51,10 @@ public class IndexService {
     private final String ALCOHOL_INDEX_NAME = "alcohols";
     private final String AUTO_COMPLETION_INDEX_NAME = "auto-completion";
 
+    /**
+     * 모든 alcohol 엔티티 객체와 그 객체들의 연관관계에 놓인 엔티티를
+     * 한 번에 전부 불러오는 함수
+     */
     @Transactional(readOnly = true)
     private List<Alcohol> getAllAlcohols() {
         List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
