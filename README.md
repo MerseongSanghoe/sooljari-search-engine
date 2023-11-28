@@ -13,9 +13,9 @@
 * Neo4j v5.12.0
 
 ## ☎️ API Documents (latest - v0.0.5)
-### Search API [🔗 link](docs/searchAPI/v0.0.5.md)
-### Index API [🔗 link](docs/indexAPI/v0.0.2.md)
-### Auto Completion API [🔗 link](docs/autocompletionAPI/v0.0.4.md)
+### Search API [🔗 link](docs/searchAPI/latest.md)
+### Index API [🔗 link](docs/indexAPI/latest.md)
+### Auto Completion API [🔗 link](docs/autocompletionAPI/latest.md)
 
 ## 📔 Notes
 > 프로젝트 개발 중 작성한 블로그 글 혹은 문서 링크
