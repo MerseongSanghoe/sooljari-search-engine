@@ -10,7 +10,7 @@ public class TagDocument {
     @Field(type = FieldType.Text)
     private String title;
 
-    @Field(type = FieldType.Integer, index = false, docValues = false)
+    @Field(type = FieldType.Rank_Feature)
     private Integer weight;
 
     private TagDocument(String title, Integer weight) {

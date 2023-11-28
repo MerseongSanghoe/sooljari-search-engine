@@ -30,7 +30,7 @@ public class AlcoholDocument {
     @Field(type = FieldType.Keyword, index = false, docValues = false)
     private String image;
 
-    @Field(type = FieldType.Object)
+    @Field(type = FieldType.Nested)
     private List<TagDocument> tags = new ArrayList<>();
 
     @Field(type = FieldType.Object)

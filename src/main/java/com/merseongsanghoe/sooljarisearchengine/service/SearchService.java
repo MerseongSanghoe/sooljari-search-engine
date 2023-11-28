@@ -31,24 +31,36 @@ public class SearchService {
 
     /**
      * 주어진 검색 키워드로 elasticsearch에 검색 쿼리
-     * @param title title, tag 필드 타겟 검색어
+     * @param keyword title, tag 필드 타겟 검색어
      * @param tag tag 필드 타겟 검색어
      * @param page 페이징 관련 변수가 담긴 Pageable 객체
      * @return responseBody에 바로 적재할 수 있는 형태의 Map 객체
      */
-    public Map<String, Object> search(String title, String tag, Pageable page) {
+    public Map<String, Object> search(String keyword, String tag, Pageable page) {
         // elasticsearch 검색
         Query searchQuery = NativeQuery.builder()
                 .withQuery(q -> q
                         .bool(b -> b
-                                .should(s -> s
-                                        .multiMatch(m -> m
-                                            .fields("title", "tags.title")
-                                            .query(title)))
+                                // title 필드 검색
                                 .should(s -> s
                                         .match(m -> m
-                                                .field("tags.title")
-                                                .query(tag)))))
+                                            .field("title")
+                                            .query(keyword)))
+                                // tag 필드
+                                .should(s -> s
+                                        .nested(n -> n
+                                                .path("tags")
+                                                .query(nq -> nq
+                                                        .bool(nb -> nb
+                                                                // tag 필드 검색
+                                                                .must(m -> m
+                                                                        .match(mm -> mm
+                                                                                .field("tags.title")
+                                                                                .query(keyword + " " + tag)))
+                                                                // tag 필드 weight 값으로 boost 적용
+                                                                .should(ns -> ns
+                                                                        .rankFeature(r -> r
+                                                                                .field("tags.weight")))))))))
                 .withPageable(page)
                 .build();
         SearchHits<AlcoholDocument> searchHits = elasticsearchOperations.search(searchQuery, AlcoholDocument.class);
