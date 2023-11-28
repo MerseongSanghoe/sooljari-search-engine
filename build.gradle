@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.merseongsanghoe'
-version = '0.0.4'
+version = '0.0.5'
 
 java {
     sourceCompatibility = '17'
@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-data-neo4j'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'

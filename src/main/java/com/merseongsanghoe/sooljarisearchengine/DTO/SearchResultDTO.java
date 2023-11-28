@@ -20,15 +20,18 @@ public class SearchResultDTO {
     private String title;
     private String category;
     private BigDecimal degree;
+    private String image;
+
     private List<String> tags;
 
-    private SearchResultDTO(float score, long id, String title, String category, BigDecimal degree,
+    private SearchResultDTO(float score, long id, String title, String category, BigDecimal degree, String image,
                             List<String> tags) {
         this.score = score;
         this.id = id;
         this.title = title;
         this.category = category;
         this.degree = degree;
+        this.image = image;
         this.tags = tags;
     }
 
@@ -45,6 +48,7 @@ public class SearchResultDTO {
                 document.getTitle(),
                 document.getCategory(),
                 document.getDegree(),
+                document.getImage(),
                 document.getTags().stream().map(TagDocument::getTitle).collect(Collectors.toList())
         );
     }

@@ -1,14 +1,14 @@
 package com.merseongsanghoe.sooljarisearchengine.service;
 
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholElasticsearchRepository;
+import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholNodeRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AlcoholRepository;
 import com.merseongsanghoe.sooljarisearchengine.DAO.AutoCompletionElasticsearchRepository;
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
 import com.merseongsanghoe.sooljarisearchengine.document.AutoCompletionDocument;
 import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
-import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholDocumentNotFoundException;
-import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNotFoundException;
-import com.merseongsanghoe.sooljarisearchengine.exception.CompletionKeywordDuplicatedException;
+import com.merseongsanghoe.sooljarisearchengine.exception.*;
+import com.merseongsanghoe.sooljarisearchengine.node.AlcoholNode;
 import com.merseongsanghoe.sooljarisearchengine.util.IndexUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +37,29 @@ import java.util.Set;
 public class IndexService {
 
     private final AlcoholRepository alcoholRepository;
+
     private final AlcoholElasticsearchRepository alcoholElasticsearchRepository;
     private final AutoCompletionElasticsearchRepository autoCompletionElasticsearchRepository;
+
+    private final AlcoholNodeRepository alcoholNodeRepository;
 
     private final ElasticsearchOperations elasticsearchOperations;
 
     private final String ALCOHOL_INDEX_NAME = "alcohols";
     private final String AUTO_COMPLETION_INDEX_NAME = "auto-completion";
+
+    /**
+     * 모든 alcohol 엔티티 객체와 그 객체들의 연관관계에 놓인 엔티티를
+     * 한 번에 전부 불러오는 함수
+     */
+    @Transactional(readOnly = true)
+    private List<Alcohol> getAllAlcoholsOrderById() {
+        List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
+//        alcohols = alcoholRepository.findAllWithImages();
+        alcohols = alcoholRepository.findAllWithImagesOrderById();
+
+        return alcohols;
+    }
 
     /**
      * 인덱스 존재 유무 확인 (Alias 여부 미구분)
@@ -154,12 +170,36 @@ public class IndexService {
      * 데이터베이스 속 alcohol 데이터 전부 elasticsearch에 인덱싱
      */
     private void insertDocumentsIntoIndexFromDatabase(String indexName) {
-        List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
+        // 관계형 데이터베이스에서 id 기준 오름차순 정렬로 모든 주류 데이터 가져오기
+        List<Alcohol> alcoholList = this.getAllAlcoholsOrderById();
+
+        // 그래프 데이터베이스에서 dbid 기준 오름차순 정렬로 모든 주류 데이터 가져오기
+        List<AlcoholNode> alcoholNodeList = alcoholNodeRepository.findAllOrderByDbid();
+//        List<AlcoholNode> alcoholNodeList = alcoholNodeRepository.findAll();
+
+        // 만약 두 데이터 결과 개수가 다르다면 예외 발생
+        if (alcoholList.size() != alcoholNodeList.size()) {
+            // LOG: 데이터 수 확인 로그
+            log.debug("데이터 수 불일치: alcohol=" + alcoholList.size() + ", alcoholNode=" + alcoholNodeList.size());
+
+            throw new InconsistentDatabasesException(indexName);
+        }
 
         List<AlcoholDocument> documentList = new ArrayList<>();
-        for (Alcohol alcohol : alcohols) {
+        for (int i = 0; i < alcoholList.size(); i++) {
+            Alcohol alcohol = alcoholList.get(i);
+            AlcoholNode alcoholNode = alcoholNodeList.get(i);
+
+            // 엮는 객체의 아이디가 다르다면 예외 발생
+            if (!alcohol.getId().equals(alcoholNode.getDbid())) {
+                // LOG: 다른 아이디 번호 확인 로그
+                log.debug(alcohol.getId() + " " + alcoholNode.getDbid());
+
+                throw new InconsistentDatabasesException(indexName);
+            }
+
             // Alcohol 엔티티 객체로 AlcoholDocument 도큐먼트 객체 생성
-            AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol);
+            AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol, alcoholNode);
 
             documentList.add(alcoholDocument);
         }
@@ -217,7 +257,6 @@ public class IndexService {
      * Alcohol 데이터 전체 인덱싱
      * @param doReadDatabase if true, extracts data from database
      */
-    @Transactional(readOnly = true)
     public void indexAll(Boolean doReadDatabase) {
         if (existsIndex(ALCOHOL_INDEX_NAME)){
             // 이미 기존 인덱스가 존재한다면, 재인덱싱
@@ -239,21 +278,28 @@ public class IndexService {
      * @param id 데이터베이스 id
      */
     @Transactional(readOnly = true)
-    public void indexSingleDocument(Long id) {
+    public void indexSingleAlcoholDocument(Long id) {
         // 인덱스 존재 여부 확인 및 생성
         createIndexIfNotExists(ALCOHOL_INDEX_NAME, AlcoholDocument.class);
 
+        // 관계형 데이터베이스에서 주류 정보 추출
         Optional<Alcohol> _target = alcoholRepository.findByIdWithSearchKeys(id);
-
-        // 인덱스 타겟 데이터가 데이터베이스에 존재하지 않아 예외 발생
         if (_target.isEmpty()) {
             throw new AlcoholNotFoundException(id);
         }
 
         Alcohol alcohol = _target.get();
 
+        // 그래프 데이터베이스에서 주류 태그 정보 추출
+        Optional<AlcoholNode> _node = alcoholNodeRepository.findByIdOrderByTagWeightDesc(id);
+        if (_node.isEmpty()) {
+            throw new AlcoholNodeNotFoundException(id);
+        }
+
+        AlcoholNode alcoholNode = _node.get();
+
         // Alcohol 엔티티 객체로 AlcoholDocument 도큐먼트 객체 생성
-        AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol);
+        AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol, alcoholNode);
 
         // repository save() 호출 시,
         // id 값 기준으로 인덱스에 없다면 save, 인덱스에 있다면 update
@@ -320,5 +366,17 @@ public class IndexService {
         }
 
         autoCompletionElasticsearchRepository.saveAll(autoCompletionList);
+    }
+
+    /**
+     * 불필요한 인덱스 삭제
+     */
+    public void removeIndex(String indexName) {
+        // 인덱스 삭제
+        IndexOperations indexOperations = elasticsearchOperations.indexOps(IndexCoordinates.of(indexName));
+        indexOperations.delete();
+
+        // LOG: 삭제 인덱스 로깅
+        log.info("Delete Index [{}]", indexName);
     }
 }

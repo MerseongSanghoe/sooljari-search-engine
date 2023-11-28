@@ -34,7 +34,7 @@ public class IndexController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Void> index(@PathVariable("id") Long id) {
-        indexService.indexSingleDocument(id);
+        indexService.indexSingleAlcoholDocument(id);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
