@@ -49,28 +49,6 @@ public class AlcoholDocument {
     }
 
     /**
-     * Alcohol 엔티티 클래스를 매개변수로 받아
-     * 클래스 객체를 생성하는 스태틱 팩토리 메소드
-     * @param alcohol Alcohol 엔티티 객체
-     */
-    public static AlcoholDocument of(Alcohol alcohol) {
-        // image list에 데이터가 있다면 첫 번째 값, 없다면 null
-        String imageURL = alcohol.getImages().isEmpty() ? null : alcohol.getImages().get(0).getImage().getUrl();
-
-        return new AlcoholDocument(
-                alcohol.getId(),
-                alcohol.getTitle(),
-                alcohol.getCategory(),
-                alcohol.getDegree(),
-                imageURL,
-                new ArrayList<>(), // TODO: 태그 관련 개발 진행 후 변경 예정
-                alcohol.getSearchKeys().stream()
-                    .map(alcSearchKey -> new AlcSearchKeyDocument(alcSearchKey.getKey()))
-                    .collect(Collectors.toList())
-        );
-    }
-
-    /**
      * Alcohol 엔티티 객체와 Alcohol 노드 엔티티 객체를 매개변수로 받아
      * 클래스 객체를 생성하는 스태틱 팩토리 메소드
      * @param alcohol Alcohol 엔티티 객체
