@@ -7,10 +7,7 @@ import com.merseongsanghoe.sooljarisearchengine.DAO.AutoCompletionElasticsearchR
 import com.merseongsanghoe.sooljarisearchengine.document.AlcoholDocument;
 import com.merseongsanghoe.sooljarisearchengine.document.AutoCompletionDocument;
 import com.merseongsanghoe.sooljarisearchengine.entity.Alcohol;
-import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholDocumentNotFoundException;
-import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNodeNotFoundException;
-import com.merseongsanghoe.sooljarisearchengine.exception.AlcoholNotFoundException;
-import com.merseongsanghoe.sooljarisearchengine.exception.CompletionKeywordDuplicatedException;
+import com.merseongsanghoe.sooljarisearchengine.exception.*;
 import com.merseongsanghoe.sooljarisearchengine.node.AlcoholNode;
 import com.merseongsanghoe.sooljarisearchengine.util.IndexUtil;
 import lombok.RequiredArgsConstructor;
@@ -56,9 +53,10 @@ public class IndexService {
      * 한 번에 전부 불러오는 함수
      */
     @Transactional(readOnly = true)
-    private List<Alcohol> getAllAlcohols() {
+    private List<Alcohol> getAllAlcoholsOrderById() {
         List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
-        alcohols = alcoholRepository.findAllWithImages();
+//        alcohols = alcoholRepository.findAllWithImages();
+        alcohols = alcoholRepository.findAllWithImagesOrderById();
 
         return alcohols;
     }
@@ -172,13 +170,36 @@ public class IndexService {
      * 데이터베이스 속 alcohol 데이터 전부 elasticsearch에 인덱싱
      */
     private void insertDocumentsIntoIndexFromDatabase(String indexName) {
-//        List<Alcohol> alcohols = alcoholRepository.findAllWithSearchKeys();
-        List<Alcohol> alcohols = this.getAllAlcohols();
+        // 관계형 데이터베이스에서 id 기준 오름차순 정렬로 모든 주류 데이터 가져오기
+        List<Alcohol> alcoholList = this.getAllAlcoholsOrderById();
+
+        // 그래프 데이터베이스에서 dbid 기준 오름차순 정렬로 모든 주류 데이터 가져오기
+        List<AlcoholNode> alcoholNodeList = alcoholNodeRepository.findAllOrderByDbid();
+//        List<AlcoholNode> alcoholNodeList = alcoholNodeRepository.findAll();
+
+        // 만약 두 데이터 결과 개수가 다르다면 예외 발생
+        if (alcoholList.size() != alcoholNodeList.size()) {
+            // LOG: 데이터 수 확인 로그
+            log.debug("데이터 수 불일치: alcohol=" + alcoholList.size() + ", alcoholNode=" + alcoholNodeList.size());
+
+            throw new InconsistentDatabasesException(indexName);
+        }
 
         List<AlcoholDocument> documentList = new ArrayList<>();
-        for (Alcohol alcohol : alcohols) {
+        for (int i = 0; i < alcoholList.size(); i++) {
+            Alcohol alcohol = alcoholList.get(i);
+            AlcoholNode alcoholNode = alcoholNodeList.get(i);
+
+            // 엮는 객체의 아이디가 다르다면 예외 발생
+            if (!alcohol.getId().equals(alcoholNode.getDbid())) {
+                // LOG: 다른 아이디 번호 확인 로그
+                log.debug(alcohol.getId() + " " + alcoholNode.getDbid());
+
+                throw new InconsistentDatabasesException(indexName);
+            }
+
             // Alcohol 엔티티 객체로 AlcoholDocument 도큐먼트 객체 생성
-            AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol);
+            AlcoholDocument alcoholDocument = AlcoholDocument.of(alcohol, alcoholNode);
 
             documentList.add(alcoholDocument);
         }
@@ -345,5 +366,17 @@ public class IndexService {
         }
 
         autoCompletionElasticsearchRepository.saveAll(autoCompletionList);
+    }
+
+    /**
+     * 불필요한 인덱스 삭제
+     */
+    public void removeIndex(String indexName) {
+        // 인덱스 삭제
+        IndexOperations indexOperations = elasticsearchOperations.indexOps(IndexCoordinates.of(indexName));
+        indexOperations.delete();
+
+        // LOG: 삭제 인덱스 로깅
+        log.info("Delete Index [{}]", indexName);
     }
 }

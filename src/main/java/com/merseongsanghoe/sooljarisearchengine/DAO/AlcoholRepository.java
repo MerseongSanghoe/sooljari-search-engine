@@ -21,4 +21,10 @@ public interface AlcoholRepository extends JpaRepository<Alcohol, Long> {
             "LEFT JOIN FETCH a.images " +
             "LEFT JOIN FETCH a.images.image")
     List<Alcohol> findAllWithImages();
+
+    @Query("SELECT a FROM Alcohol a " +
+            "LEFT JOIN FETCH a.images " +
+            "LEFT JOIN FETCH a.images.image " +
+            "ORDER BY a.id")
+    List<Alcohol> findAllWithImagesOrderById();
 }
