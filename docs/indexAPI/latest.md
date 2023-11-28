@@ -1,0 +1,60 @@
+# Index API
+v0.0.2
+
+* [전체 데이터 인덱싱 API](#전체-데이터-인덱싱-api)
+* [인덱싱 API](#인덱싱-api)
+* [인덱싱된 데이터 삭제 API](#인덱싱된-데이터-삭제-api)
+
+## 전체 데이터 인덱싱 API
+1. 기존 인덱스가 존재하지 않는다면, 데이터베이스에서 데이터를 추출해서 인덱싱
+2. 기존 인덱스가 존재한다면,
+    1. Reindex API를 호출해서 기존 인덱스에서 데이터를 가져와 인덱싱 (매핑 설정 변경, 사용자 사전 업데이트 등에 활용)
+   2. 데이터베이스에서 데이터를 직접 추출해서 인덱싱 (개발 중 전체적인 데이터의 오류 fix, 컬럼 추가 등에 활용)
+### Request
+#### URI
+`POST /index/all`
+#### Query Parameters
+* `db`
+  * 선택 파라미터
+  * 재인덱싱 시 데이터베이스에서 데이터 추출해서 인덱싱
+  * `?db`, `?db=true`, `?db=1` 등, 쿼리 파라미터의 **존재 여부**만 확인함!
+#### Request Example
+```
+/index/all
+```
+```
+/index/all?db
+```
+### Response
+#### Response Status Code
+`201`
+
+## 인덱싱 API
+### Request
+#### URI
+`PUT /index/{id}`
+#### Path Parameters
+* `id`: 인덱싱 요청할 데이터의 데이터베이스 id
+#### Request Example
+```
+/index/5
+```
+### Response
+#### Response Status Code
+* `201`: 인덱싱 성공
+* `404`: 데이터베이스에 `id` 값을 갖는 데이터가 없어, 인덱싱 실패
+
+## 인덱싱된 데이터 삭제 API
+### Request
+#### URI
+`DELETE /index/{id}`
+#### Path Parameters
+* `id`: 인덱스에서 삭제를 요청할 데이터의 데이터베이스 id
+#### Request Example
+```
+/index/5
+```
+### Response
+#### Response Status Code
+* `204`: 삭제 성공
+* `404`: 인덱스에 `id` 값을 갖는 데이터가 없어, 삭제 실패
