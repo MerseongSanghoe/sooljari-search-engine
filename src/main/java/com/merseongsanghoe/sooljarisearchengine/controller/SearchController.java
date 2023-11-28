@@ -1,5 +1,6 @@
 package com.merseongsanghoe.sooljarisearchengine.controller;
 
+import com.merseongsanghoe.sooljarisearchengine.exception.RequiredRequestParamIsMissingException;
 import com.merseongsanghoe.sooljarisearchengine.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +22,20 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("")
-    public ResponseEntity<Map<String, Object>> search(@RequestParam("s") String s,
+    public ResponseEntity<Map<String, Object>> search(@RequestParam(value = "s", defaultValue = "") String s,
+                                                      @RequestParam(value = "t", defaultValue = "") String t,
                                                       Pageable page) {
         // DEBUG LOG: 검색 키워드
         log.debug("Search Keyword: {}", s);
+        log.debug("Search Tag Keyword: {}", t);
 
-        Map<String, Object> results = searchService.searchTitle(s, page);
+        // s와 t 검색어 전부 없으면 예외 발생
+        // TODO: 더 깔끔하게 처리하는 방법 없을까...
+        if (s.isEmpty() && t.isEmpty()) {
+            throw new RequiredRequestParamIsMissingException("s or t");
+        }
+
+        Map<String, Object> results = searchService.search(s, t, page);
 
         return ResponseEntity.ok().body(results);
     }

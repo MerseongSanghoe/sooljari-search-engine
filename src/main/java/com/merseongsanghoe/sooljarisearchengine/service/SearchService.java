@@ -30,19 +30,25 @@ public class SearchService {
     private final ElasticsearchOperations elasticsearchOperations;
 
     /**
-     * title 검색어를 활용해 title 필드 타겟으로 elasticsearch에 검색 쿼리
-     * @param title title 필드 타겟의 검색어
+     * 주어진 검색 키워드로 elasticsearch에 검색 쿼리
+     * @param title title, tag 필드 타겟 검색어
+     * @param tag tag 필드 타겟 검색어
      * @param page 페이징 관련 변수가 담긴 Pageable 객체
      * @return responseBody에 바로 적재할 수 있는 형태의 Map 객체
      */
-    public Map<String, Object> searchTitle(String title, Pageable page) {
+    public Map<String, Object> search(String title, String tag, Pageable page) {
         // elasticsearch 검색
-//        SearchHits<AlcoholDocument> searchHits = alcoholElasticsearchRepository.findByTitle(title, page).getSearchHits();
         Query searchQuery = NativeQuery.builder()
                 .withQuery(q -> q
-                        .match(m -> m
-                                .field("title")
-                                .query(title)))
+                        .bool(b -> b
+                                .should(s -> s
+                                        .multiMatch(m -> m
+                                            .fields("title", "tags.title")
+                                            .query(title)))
+                                .should(s -> s
+                                        .match(m -> m
+                                                .field("tags.title")
+                                                .query(tag)))))
                 .withPageable(page)
                 .build();
         SearchHits<AlcoholDocument> searchHits = elasticsearchOperations.search(searchQuery, AlcoholDocument.class);

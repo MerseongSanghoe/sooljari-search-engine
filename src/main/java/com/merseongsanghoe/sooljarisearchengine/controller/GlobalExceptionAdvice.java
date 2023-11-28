@@ -27,6 +27,7 @@ public class GlobalExceptionAdvice {
 
     @ExceptionHandler({
             RequiredRequestBodyIsMissingException.class,
+            RequiredRequestParamIsMissingException.class,
     })
     public ResponseEntity<ExceptionResponse> badRequestException(Exception e) {
         return ResponseEntity
