@@ -12,8 +12,8 @@
 * MySQL
 * Neo4j v5.12.0
 
-## ☎️ API Documents (latest - v0.0.4)
-### Search API [🔗 link](docs/searchAPI/v0.0.3.md)
+## ☎️ API Documents (latest - v0.0.5)
+### Search API [🔗 link](docs/searchAPI/v0.0.5.md)
 ### Index API [🔗 link](docs/indexAPI/v0.0.2.md)
 ### Auto Completion API [🔗 link](docs/autocompletionAPI/v0.0.4.md)
 
